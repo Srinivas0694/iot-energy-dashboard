@@ -1,0 +1,52 @@
+// Prisma schema for the IoT Energy Monitoring platform.
+// Designed multi-device from day one: readings hang off a Device.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Device {
+  id        String   @id @default(cuid())
+  // Human/firmware-facing identifier, e.g. "DEVICE001"
+  deviceId  String   @unique
+  name      String   @default("Unnamed Device")
+  location  String   @default("")
+  // Firmware pushes readings; we derive online/offline from lastSeenAt,
+  // but keep a manual override flag too.
+  status    DeviceStatus @default(OFFLINE)
+  lastSeenAt DateTime?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  readings  Reading[]
+
+  @@index([deviceId])
+}
+
+model Reading {
+  id        BigInt   @id @default(autoincrement())
+  device    Device   @relation(fields: [deviceId], references: [deviceId], onDelete: Cascade)
+  deviceId  String
+
+  voltage   Float    // Volts (V)
+  current   Float    // Amperes (A)
+  power     Float    // Watts (W)
+  energy    Float    // Kilowatt-hours (kWh) — cumulative meter value
+
+  timestamp DateTime @default(now())
+  createdAt DateTime @default(now())
+
+  @@index([deviceId, timestamp])
+  @@index([timestamp])
+}
+
+enum DeviceStatus {
+  ONLINE
+  OFFLINE
+  IDLE
+}
