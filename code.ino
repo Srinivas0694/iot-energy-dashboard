@@ -30,7 +30,7 @@ const char* WIFI_PASS = "Awfis#2025#";
 // Where the dashboard is running:
 //  - Local test:  "http://192.168.1.50:3000/api/device-data"  (your PC's LAN IP)
 //  - Deployed:    "https://your-app.vercel.app/api/device-data"
-const char* SERVER    = "https://iot-energy-dashboard.vercel.app//api/device-data";
+const char* SERVER    = "https://iot-energy-dashboard.vercel.app/api/device-data";
 
 // true if SERVER starts with https:// (Vercel). false for http:// (local PC).
 #define USE_HTTPS true
