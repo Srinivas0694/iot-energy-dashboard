@@ -6,37 +6,38 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
 
 model Device {
-  id        String   @id @default(cuid())
+  id         String       @id @default(cuid())
   // Human/firmware-facing identifier, e.g. "DEVICE001"
-  deviceId  String   @unique
-  name      String   @default("Unnamed Device")
-  location  String   @default("")
+  deviceId   String       @unique
+  name       String       @default("Unnamed Device")
+  location   String       @default("")
   // Firmware pushes readings; we derive online/offline from lastSeenAt,
   // but keep a manual override flag too.
-  status    DeviceStatus @default(OFFLINE)
+  status     DeviceStatus @default(OFFLINE)
   lastSeenAt DateTime?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt  DateTime     @default(now())
+  updatedAt  DateTime     @updatedAt
 
-  readings  Reading[]
+  readings Reading[]
 
   @@index([deviceId])
 }
 
 model Reading {
-  id        BigInt   @id @default(autoincrement())
-  device    Device   @relation(fields: [deviceId], references: [deviceId], onDelete: Cascade)
-  deviceId  String
+  id       BigInt @id @default(autoincrement())
+  device   Device @relation(fields: [deviceId], references: [deviceId], onDelete: Cascade)
+  deviceId String
 
-  voltage   Float    // Volts (V)
-  current   Float    // Amperes (A)
-  power     Float    // Watts (W)
-  energy    Float    // Kilowatt-hours (kWh) — cumulative meter value
+  voltage Float // Volts (V)
+  current Float // Amperes (A)
+  power   Float // Watts (W)
+  energy  Float // Kilowatt-hours (kWh) — cumulative meter value
 
   timestamp DateTime @default(now())
   createdAt DateTime @default(now())
@@ -49,4 +50,105 @@ enum DeviceStatus {
   ONLINE
   OFFLINE
   IDLE
+}
+
+// ================= FREEZER PDI MODELS =================
+
+enum StationStatus {
+  ONLINE
+  OFFLINE
+}
+
+enum TestStatus {
+  PENDING
+  RUNNING
+  COMPLETED
+  FAILED_TO_START
+  CANCELLED
+}
+
+enum Result {
+  PASS
+  FAIL
+}
+
+enum ParamStatus {
+  PENDING
+  PASS
+  WARN
+  FAIL
+}
+
+enum GasStatus {
+  SAFE
+  WARNING
+  LEAK
+}
+
+model Freezer {
+  id          String        @id @default(uuid()) @db.Uuid
+  freezerCode String        @unique @map("freezer_code")
+  model       String?
+  createdAt   DateTime      @default(now()) @map("created_at")
+  sessions    TestSession[]
+
+  @@map("freezers")
+}
+
+model TestStation {
+  id        String        @id @default(uuid()) @db.Uuid
+  stationId String        @unique @map("station_id")
+  deviceId  String        @unique @map("device_id")
+  status    StationStatus @default(OFFLINE)
+  lastSeen  DateTime?     @map("last_seen")
+  createdAt DateTime      @default(now()) @map("created_at")
+  sessions  TestSession[]
+
+  @@map("test_stations")
+}
+
+model TestSession {
+  id              String     @id @default(uuid()) @db.Uuid
+  freezerId       String     @map("freezer_id") @db.Uuid
+  stationId       String     @map("station_id") @db.Uuid
+  status          TestStatus @default(RUNNING)
+  startedAt       DateTime   @default(now()) @map("started_at")
+  completedAt     DateTime?  @map("completed_at")
+  durationSeconds Int        @default(300) @map("duration_seconds")
+  voltageResult   Result?    @map("voltage_result")
+  currentResult   Result?    @map("current_result")
+  powerResult     Result?    @map("power_result")
+  gasResult       Result?    @map("gas_result")
+  overallResult   Result?    @map("overall_result")
+  createdAt       DateTime   @default(now()) @map("created_at")
+
+  freezer  Freezer         @relation(fields: [freezerId], references: [id])
+  station  TestStation     @relation(fields: [stationId], references: [id])
+  readings SensorReading[]
+
+  @@index([stationId, status])
+  @@index([freezerId])
+  @@index([startedAt])
+  @@map("test_sessions")
+}
+
+model SensorReading {
+  id             String      @id @default(uuid()) @db.Uuid
+  testSessionId  String      @map("test_session_id") @db.Uuid
+  createdAt      DateTime    @default(now()) @map("created_at")
+  elapsedSeconds Int         @map("elapsed_seconds")
+  voltage        Float
+  current        Float
+  power          Float
+  energy         Float
+  gasValue       Int         @map("gas_value")
+  gasStatus      GasStatus   @map("gas_status")
+  voltageStatus  ParamStatus @map("voltage_status")
+  currentStatus  ParamStatus @map("current_status")
+  powerStatus    ParamStatus @map("power_status")
+
+  session TestSession @relation(fields: [testSessionId], references: [id], onDelete: Cascade)
+
+  @@index([testSessionId, elapsedSeconds])
+  @@map("sensor_readings")
 }
