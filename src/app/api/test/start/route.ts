@@ -1,6 +1,7 @@
-// app/api/test/start/route.ts
+// src/app/api/test/start/route.ts
 import { prisma } from "@/lib/prisma";
 import { ok, err } from "@/lib/api-helpers";
+import { expireStaleTests } from "@/lib/expire";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -16,6 +17,7 @@ export async function POST(req: Request) {
 
     const station = await prisma.testStation.findUnique({ where: { stationId } });
     if (!station) return err(`Unknown station: ${stationId}`, 404);
+    await expireStaleTests(station.id);
 
     const freezer = await prisma.freezer.upsert({
       where: { freezerCode },

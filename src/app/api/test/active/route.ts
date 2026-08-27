@@ -1,6 +1,7 @@
-// app/api/test/active/route.ts
+// src/app/api/test/active/route.ts
 import { prisma } from "@/lib/prisma";
 import { ok, err, checkDeviceKey } from "@/lib/api-helpers";
+import { expireStaleTests } from "@/lib/expire";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -16,6 +17,7 @@ export async function GET(req: Request) {
 
     const station = await prisma.testStation.findUnique({ where: { stationId } });
     if (!station) return err(`Unknown station: ${stationId}`, 404);
+    await expireStaleTests(station.id);
 
     await prisma.testStation.update({
       where: { id: station.id },
