@@ -10,6 +10,8 @@ export interface Reading {
   power: number;
   energy: number;
   timestamp: string; // ISO string
+  gas?: number | null;
+  gasStatus?: string | null;
 }
 
 export interface Device {
@@ -52,4 +54,6 @@ export interface DeviceDataInput {
   power: number;
   energy: number;
   timestamp?: string;
+  gasADC?: number;
+  gasStatus?: string;
 }

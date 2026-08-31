@@ -80,6 +80,8 @@ export function serializeReading(row: {
   power: number;
   energy: number;
   timestamp: Date;
+  gas?: number | null;
+  gasStatus?: string | null;
 }): Reading {
   return {
     id: String(row.id),
@@ -89,5 +91,7 @@ export function serializeReading(row: {
     power: row.power,
     energy: row.energy,
     timestamp: row.timestamp.toISOString(),
+    gas: row.gas ?? null,
+    gasStatus: row.gasStatus ?? null,
   };
 }

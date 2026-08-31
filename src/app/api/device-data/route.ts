@@ -30,7 +30,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Invalid JSON body" }, { status: 400 });
   }
 
-  const { deviceId, voltage, current, power, energy, timestamp } = body ?? {};
+    const { deviceId, voltage, current, power, energy, timestamp, gasADC, gasStatus } = body ?? {};
 
   // --- Validation ---
   if (!deviceId || typeof deviceId !== "string") {
@@ -55,8 +55,12 @@ export async function POST(req: NextRequest) {
     update: { status: "ONLINE", lastSeenAt: new Date() },
   });
 
-  const reading = await prisma.reading.create({
-    data: { deviceId, voltage, current, power, energy, timestamp: ts },
+    const reading = await prisma.reading.create({
+    data: {
+      deviceId, voltage, current, power, energy, timestamp: ts,
+      gas: typeof gasADC === "number" ? gasADC : null,
+      gasStatus: typeof gasStatus === "string" ? gasStatus : null,
+    },
   });
 
   return NextResponse.json(

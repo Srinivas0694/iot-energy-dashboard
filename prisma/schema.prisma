@@ -38,6 +38,8 @@ model Reading {
   current Float // Amperes (A)
   power   Float // Watts (W)
   energy  Float // Kilowatt-hours (kWh) — cumulative meter value
+  gas       Int?
+  gasStatus String?
 
   timestamp DateTime @default(now())
   createdAt DateTime @default(now())
