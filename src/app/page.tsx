@@ -59,7 +59,7 @@ function ScanPanel({ onStarted }: { onStarted: () => void }) {
   const [msg, setMsg] = useState("");
   const [testId, setTestId] = useState("");
 
-  function useCode() {
+  function applycode() {
     const v = manual.trim().toUpperCase();
     if (!v) return;
     setFreezerId(v);
@@ -92,11 +92,11 @@ function ScanPanel({ onStarted }: { onStarted: () => void }) {
             <input
               value={manual}
               onChange={(e) => setManual(e.target.value)}
-              onKeyDown={(e) => e.key === "Enter" && useCode()}
+              onKeyDown={(e) => e.key === "Enter" && applycode()}
               placeholder="Freezer serial / code"
               className="w-full rounded-xl border border-slate-700 bg-slate-950 px-4 py-3 outline-none focus:border-emerald-400"
             />
-            <button onClick={useCode} className="rounded-xl bg-emerald-400 px-5 font-bold text-slate-950">Use</button>
+            <button onClick={applycode} className="rounded-xl bg-emerald-400 px-5 font-bold text-slate-950">Use</button>
           </div>
           <p className="mt-3 text-xs text-slate-500">
             On a phone, use the mobile app or the <a href="/scan" className="text-emerald-400">camera scan page</a> to scan a QR/barcode.
@@ -139,7 +139,7 @@ function ScanPanel({ onStarted }: { onStarted: () => void }) {
       {phase === "error" && (
         <div className="space-y-4">
           <div className="rounded-2xl border border-red-500/40 bg-red-500/10 p-6 text-center">
-            <div className="text-xl font-bold text-red-400">Couldn't start</div>
+            <div className="text-xl font-bold text-red-400">Couldn&apos;t start</div>
             <p className="mt-2 text-sm text-slate-300">{msg}</p>
           </div>
           <button onClick={() => setPhase("review")} className="w-full rounded-xl bg-emerald-400 py-3 font-bold text-slate-950">Try again</button>
