@@ -39,7 +39,7 @@ export async function POST(req: Request) {
           freezerId: freezer.id,
           stationId: station.id,
           status: "RUNNING",
-          durationSeconds: 300,
+          durationSeconds: 60,
         },
       });
     } catch (e: unknown) {
