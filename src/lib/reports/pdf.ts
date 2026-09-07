@@ -3,7 +3,7 @@
 // FIXES: use a fixed MARGIN constant (not doc.page.margin), no emoji glyphs,
 // all text widths guarded so pdfkit never receives NaN.
 
-import PDFDocument from "pdfkit";
+import PDFDocument from "pdfkit/js/pdfkit.standalone.js";
 import path from "path";
 import type { ReportRow } from "./data";
 
