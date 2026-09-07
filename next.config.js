@@ -1,12 +1,14 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // ...any existing settings you already have...
   experimental: {
     serverComponentsExternalPackages: ["pdfkit"],
     outputFileTracingIncludes: {
-      "/api/reports/daily": ["./node_modules/pdfkit/js/data/**/*"],
+      "/api/reports/daily": [
+        "./node_modules/pdfkit/js/data/**/*",
+        "./node_modules/pdfkit/js/standard-fonts/**/*",
+        "./node_modules/fontkit/**/*"
+      ],
     },
   },
 };
-
 module.exports = nextConfig;
