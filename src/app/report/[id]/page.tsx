@@ -11,10 +11,10 @@ import {
 
 // Threshold lines drawn on the charts. Keep these in sync with the ESP32 firmware.
 const TH = {
-  voltage: { min: 190, max: 254 },
-  current: { min: 1.5, max: 2.3 },
-  power: { min: 130, max: 245 },
-  gas: 1800,
+  voltage: { min: 200, max: 250 },
+  current: { min: 0.8, max: 2.5 },
+  power: { min: 120, max: 400 },
+  gas: 1000,
 };
 
 type Reading = {

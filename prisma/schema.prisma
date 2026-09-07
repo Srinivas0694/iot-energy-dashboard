@@ -154,3 +154,17 @@ model SensorReading {
   @@index([testSessionId, elapsedSeconds])
   @@map("sensor_readings")
 }
+
+model ReportJob {
+  id           String    @id @default(uuid()) @db.Uuid
+  reportDate   String    @map("report_date")      // "2026-09-01" (IST day)
+  scheduledFor String?   @map("scheduled_for")    // e.g. "18:00 IST"
+  startedAt    DateTime  @default(now()) @map("started_at")
+  completedAt  DateTime? @map("completed_at")
+  status       String    @map("status")           // SUCCESS | FAILED | NO_DATA
+  recordCount  Int       @default(0) @map("record_count")
+  errorMessage String?   @map("error_message")
+  createdAt    DateTime  @default(now()) @map("created_at")
+
+  @@map("report_jobs")
+}
