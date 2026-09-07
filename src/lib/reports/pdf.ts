@@ -4,7 +4,7 @@
 // all text widths guarded so pdfkit never receives NaN.
 
 // @ts-ignore
-import PDFDocument from "pdfkit/js/pdfkit.standalone.js";
+import PDFDocument from "pdfkit";
 import path from "path";
 import type { ReportRow } from "./data";
 

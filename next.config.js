@@ -1,10 +1,11 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  reactStrictMode: true,
-  // exceljs / jspdf are used only in server routes; keep them external so
-  // they are not bundled into the client build.
+  // ...any existing settings you already have...
   experimental: {
-    serverComponentsExternalPackages: ["exceljs", "jspdf", "jspdf-autotable","pdfkit"],
+    serverComponentsExternalPackages: ["pdfkit"],
+    outputFileTracingIncludes: {
+      "/api/reports/daily": ["./node_modules/pdfkit/js/data/**/*"],
+    },
   },
 };
 
